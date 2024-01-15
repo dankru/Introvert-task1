@@ -122,7 +122,7 @@ function arrayDiff($A, $B) {
                 <tr>
                     <td>ID Клиента:<?= $client["id"]; ?></td>
                     <td>Имя Клиента:<?= $client["name"]; ?></td>
-                    <td>Доступ клиента не актуален</td>
+                    <td style="color: #f57542">Доступ клиента не актуален</td>
                 </tr>
             <?php endforeach; ?>
 
