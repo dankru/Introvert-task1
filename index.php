@@ -24,6 +24,11 @@ function getClients(): array
             "name" => "artedegrass0",
             "api" => "",
         ],
+        [
+            "id" => 8967010,
+            "name" => "intrdev",
+            "api" => "23bc075b710da43f0ffb50ff9e889aed"
+        ],
     ];
 }
 
@@ -85,34 +90,41 @@ function getLeadsSum($filteredLeads): int
 <body style="height: 100%;">
 <div style="width: 100%; height: 100%; display:flex; justify-content: center; align-items: center;flex-direction: column">
     <table>
+        <form action="index.php" method="POST"
+        ">
+        <input type="datetime-local" required name="dateFrom" style="width: 500px; ">
+        <input type="datetime-local" required name="dateTo" style="width: 500px;">
+        <button type="submit" style="width: 500px;">Получить данные</button>
+        </form>
         <?php
         if (!empty ($_POST['dateFrom']) && !empty($_POST['dateTo'])) :
             $clients = getClients();
             $filteredClients = filterClientsByAccess($clients, $api);
+            $wholeSum = 0;
             foreach ($filteredClients as $client):
                 $leads = getClientLeads($client, $api);
                 $dateFrom = strtotime($_POST['dateFrom']);
                 $dateTo = strtotime($_POST['dateTo']);
                 $filteredLeads = filterLeadsByDate($leads, $dateFrom, $dateTo);
-                $sum = getLeadsSum($filteredLeads); ?>
+                $sum = getLeadsSum($filteredLeads);
+                $wholeSum += $sum;
+                ?>
                 <tr>
                     <td>ID Клиента:<?= $client["id"]; ?></td>
                     <td>Имя Клиента:<?= $client["name"]; ?></td>
                     <td>Сумма сделок клиента:<?= $sum; ?></td>
                 </tr>
             <?php endforeach; ?>
-            От:
-            <?php echo date('Y-m-d H:i', $dateFrom) ?>
-            <br>
-            До:
-            <?php echo date('Y-m-d H:i', $dateTo) ?>
+            <h3>Сумма сделок всех клиетов:<?= $wholeSum; ?></h3>
+            <div style="margin: 40px 0 0 0">
+                От:
+                <?php echo date('Y-m-d H:i', $dateFrom) ?>
+                <br>
+                До:
+                <?php echo date('Y-m-d H:i', $dateTo) ?>
+            </div>
         <?php endif; ?>
-        <form action="index.php" method="POST"
-        ">
-        <input type="datetime-local" required name="dateFrom" style="width: 500px;">
-        <input type="datetime-local" required name="dateTo" style="width: 500px;">
-        <button type="submit" style="width: 500px;">Получить данные</button>
-        </form>
+
     </table>
 </div>
 
