@@ -24,11 +24,6 @@ function getClients(): array
             "name" => "artedegrass0",
             "api" => "",
         ],
-        [
-            "id" => 8967010,
-            "name" => "intrdev",
-            "api" => "23bc075b710da43f0ffb50ff9e889aed"
-        ],
     ];
 }
 
@@ -87,7 +82,7 @@ function getLeadsSum($filteredLeads): int
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Homepage</title>
 </head>
-<body style="width: 100%; height: 100%;">
+<body style="height: 100%;">
 <div style="width: 100%; height: 100%; display:flex; justify-content: center; align-items: center;flex-direction: column">
     <table>
         <?php
