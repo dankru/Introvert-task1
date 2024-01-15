@@ -24,17 +24,13 @@ function getClients(): array
             "name" => "artedegrass0",
             "api" => "",
         ],
-        [
-            "id" => 8967010,
-            "name" => "intrdev",
-            "api" => "23bc075b710da43f0ffb50ff9e889aed"
-        ],
     ];
 }
 
 function filterClientsByAccess($clients, $api): array
 {
     $filteredClients = [];
+    $remainingClients = [];
     foreach ($clients as $client) {
         $apiKey = $client['api'];
         $api->getConfig()->setApiKey('key', $apiKey);
@@ -42,10 +38,10 @@ function filterClientsByAccess($clients, $api): array
             $result = $api->account->info();
             array_push($filteredClients, $client);
         } catch (Exception $e) {
-
+            array_push($remainingClients, $client);
         }
     }
-    return $filteredClients;
+    return [$filteredClients, $remainingClients];
 }
 
 function getClientLeads($client, $api): array
@@ -76,7 +72,10 @@ function getLeadsSum($filteredLeads): int
     // reduces leads array to sum, returns sum
     return array_reduce($filteredLeads, fn($sum, $lead) => $sum += $lead["price"]);
 }
-
+function arrayDiff($A, $B) {
+    $intersect = array_intersect($A, $B);
+    return array_merge(array_diff($A, $intersect), array_diff($B, $intersect));
+}
 ?>
 <!doctype html>
 <html lang="en" style="width: 100%; height: 100%;">
@@ -99,7 +98,9 @@ function getLeadsSum($filteredLeads): int
         <?php
         if (!empty ($_POST['dateFrom']) && !empty($_POST['dateTo'])) :
             $clients = getClients();
-            $filteredClients = filterClientsByAccess($clients, $api);
+            $clientsArray = filterClientsByAccess($clients, $api);
+            $filteredClients = $clientsArray[0];
+            $remainingClients = $clientsArray[1];
             $wholeSum = 0;
             foreach ($filteredClients as $client):
                 $leads = getClientLeads($client, $api);
@@ -114,7 +115,17 @@ function getLeadsSum($filteredLeads): int
                     <td>Имя Клиента:<?= $client["name"]; ?></td>
                     <td>Сумма сделок клиента:<?= $sum; ?></td>
                 </tr>
+            <?php endforeach;
+
+            foreach ($remainingClients as $client):
+                ?>
+                <tr>
+                    <td>ID Клиента:<?= $client["id"]; ?></td>
+                    <td>Имя Клиента:<?= $client["name"]; ?></td>
+                    <td>Доступ клиента не актуален</td>
+                </tr>
             <?php endforeach; ?>
+
             <h3>Сумма сделок всех клиетов:<?= $wholeSum; ?></h3>
             <div style="margin: 40px 0 0 0">
                 От:
